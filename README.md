@@ -6,38 +6,40 @@
 
 <p align="center">
   <b>A minimal terminal text editor that refuses to be dumb.</b><br>
-  Clean. Fast. C++23. No bloat. No colors. No bullshit.<br>
+  Clean. Fast. Pure C. No bloat. No colors. No bullshit.<br>
 </p>
 
 ---
 
-## 🚀 **Features**
+## 🚀 **What’s New in 2.0 (C Edition)**
 
-* ✨ **C++23** modern codebase (fast, clean, zero legacy noise)
-* 🐸 **Ctrl+A — Select All** (nano never had the courage)
-* 💾 **Ctrl+O — Save with filename prompt** (nano-style)
-* ✂️ **Ctrl+K / Ctrl+U — Cut / Uncut line**
-* 🔍 **Ctrl+W — Forward search**
-* 📌 **Status bar + help bar**, nano-like but improved
-* 📦 **Right-click paste** (because terminals can do that)
-* 🧼 No syntax highlight, no color spam — **pure editing**
-* 🗂️ Loads non-existent files as empty buffer
-* 🔥 ASCII splash screen of FrogX at startup
-* 🌐 Works globally:
+FrogX 2.0 is a **full rewrite in C**, designed to be faster, smaller and safer:
 
-  ```bash
-  sudo cp frogx /usr/local/bin/
-  frogx file.cpp
-  ```
+* 🧬 **Rewritten from scratch in pure C** (no C++, no classes, no runtime overhead)
+* ⚡ **Low-level I/O** using `read()` and `write()` for maximum speed and control
+* 📦 **Tiny static binary (~15 KB)** with aggressive compiler/linker optimizations
+* 🔄 **Zero flicker** — fully stable ncurses UI with correct screen redraw logic
+* 🧼 **Clean architecture**: single file, zero abstractions, zero magic
+* 🧠 **Robust internal buffer** with safe cursor movement and boundaries
+* ✂️ **Cut/Uncut mechanics fully fixed** (Ctrl+K / Ctrl+U)
+* 🖱️ **Right-click paste working across terminals**
+* 🔍 **Search improved** (Ctrl+W with stable viewport updates)
+* 📌 **More reliable status & help bars**
+* 🐸 **Optimized ASCII splash**, no delay and no visual artifacts
+* 🧱 **No dependencies except ncurses**
+* 🔐 **Safer memory handling**, no leaks, no undefined behavior
+
+FrogX is now **as small as nano**, but without its limitations — and without its weight.
 
 ---
 
 ## 📥 **Download**
 
-🔗 **Latest Release (v1.0):**
-👉 [https://github.com/victormeloasm/frogx/releases/download/1.0/frogx.zip](https://github.com/victormeloasm/frogx/releases/download/1.0/frogx.zip)
+🎉 **Latest release (v2.0, C edition):**
 
-Unzip and place the executable wherever you like.
+👉 **[https://github.com/victormeloasm/frogx/releases/download/v2.0/frogx-2.0.0-linux-x86_64.tar.gz](https://github.com/victormeloasm/frogx/releases/download/v2.0/frogx-2.0.0-linux-x86_64.tar.gz)**
+
+Extract and place the executable wherever you prefer.
 
 ---
 
@@ -45,14 +47,21 @@ Unzip and place the executable wherever you like.
 
 ### **Requirements**
 
-* `clang++` or `g++` with C++23
-* `ncurses` development package
-* `lld` recommended for fast linking
+* `gcc` or `clang` with full C11 support
+* `ncurses` development headers
+* `lld` (optional) for extreme binary size reduction
 
 ### **Compile**
 
 ```bash
-clang++ -std=c++23 -O3 -flto=thin -fuse-ld=lld -lncurses -o frogx frogx.cpp
+gcc -std=c11 -O3 -ffunction-sections -fdata-sections -flto -fuse-ld=lld \
+    -s -o frogx frogx.c -lncurses
+```
+
+Optional flags to reach the ~15 KB binary:
+
+```bash
+-Wl,--gc-sections,--strip-all
 ```
 
 ### **Install globally**
@@ -66,53 +75,55 @@ sudo chmod 755 /usr/local/bin/frogx
 
 ## 🧠 **Keyboard Shortcuts**
 
-| Shortcut            | Action                         |
-| ------------------- | ------------------------------ |
-| **Ctrl+X**          | Exit (double press if unsaved) |
-| **Ctrl+O**          | Save (prompt for filename)     |
-| **Ctrl+A**          | Select all                     |
-| **Del / Backspace** | Delete / Backspace             |
-| **Ctrl+K**          | Cut line                       |
-| **Ctrl+U**          | Uncut (paste)                  |
-| **Ctrl+W**          | Search forward                 |
-| **Arrow Keys**      | Move cursor                    |
-| **Home / End**      | Line begin / end               |
-| **Page Up / Down**  | Scroll by screen               |
-| **Right-Click**     | Paste                          |
+| Shortcut             | Action                         |
+| -------------------- | ------------------------------ |
+| **Ctrl+X**           | Exit (double-press if unsaved) |
+| **Ctrl+O**           | Save with filename prompt      |
+| **Ctrl+A**           | Select all                     |
+| **Delete/Backspace** | Delete characters              |
+| **Ctrl+K**           | Cut line                       |
+| **Ctrl+U**           | Uncut (paste)                  |
+| **Ctrl+W**           | Search forward                 |
+| **Arrow Keys**       | Move cursor                    |
+| **Home / End**       | Jump to line start/end         |
+| **Page Up/Down**     | Scroll viewport                |
+| **Right-Click**      | Paste                          |
 
 ---
 
-## 📝 **Changelog (v1.0.0)**
+## 📝 **Changelog (v2.0.0)**
 
-* First public release
-* Modern C++23 rewrite
-* Full ncurses UI
-* New shortcuts (Ctrl+A, etc.)
-* Better save prompt
-* Status/help bars
-* ASCII splash
+* Complete rewrite in C
+* Low-level I/O (`read`, `write`)
+* Stable redraw (no flicker, no UI glitches)
+* Faster search, cut, paste, and navigation
+* Improved status/help bar
+* Fixed splash screen timing and positioning
 * Global install support
+* ~15 KB optimized release binary
+* Overall: cleaner, faster, safer, smaller
 
 ---
 
-## 🐸 **Why FrogX?**
+## 🐸 **Why FrogX Exists**
 
-Because sometimes all you want is:
+Because the world doesn’t need another bloated editor.
 
-* no plugins
-* no 200-line config files
-* no LSP
-* no AI
-* no delay
+Sometimes you just need:
 
-Just open a file → type → save → close.
-**FrogX does exactly that. Nothing more. Nothing less.**
+* instant startup
+* predictable behavior
+* zero dependencies
+* zero configs
+* zero surprises
+
+**Open → edit → save → quit.**
+Everything else is noise.
 
 ---
 
 ## 🐸💚 **Part of the FrogTools ecosystem**
 
-Security. Cryptography. Compression. Editors.
-Tudo do Porquinho. Tudo open source. Tudo Frog.
-
+Security. Cryptography. Editors. Compression.
+Everything light, clean and open-source — from the Porquinho.
 
