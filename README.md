@@ -6,124 +6,160 @@
 
 <p align="center">
   <b>A minimal terminal text editor that refuses to be dumb.</b><br>
-  Clean. Fast. Pure C. No bloat. No colors. No bullshit.<br>
+  Clean. Fast. Pure C. Low-level Linux terminal API. No bloat. No colors. No bullshit.<br>
 </p>
 
 ---
 
-## 🚀 **What’s New in 2.0 (C Edition)**
+## 🚀 **FrogX 2.0 is pure low-level**
 
-FrogX 2.0 is a **full rewrite in C**, designed to be faster, smaller and safer:
+FrogX 2.0 is a **full rewrite in C** focused on **minimalism and control**.
 
-* 🧬 **Rewritten from scratch in pure C** (no C++, no classes, no runtime overhead)
-* ⚡ **Low-level I/O** using `read()` and `write()` for maximum speed and control
-* 📦 **Tiny static binary (~15 KB)** with aggressive compiler/linker optimizations
-* 🔄 **Zero flicker** — fully stable ncurses UI with correct screen redraw logic
-* 🧼 **Clean architecture**: single file, zero abstractions, zero magic
-* 🧠 **Robust internal buffer** with safe cursor movement and boundaries
-* ✂️ **Cut/Uncut mechanics fully fixed** (Ctrl+K / Ctrl+U)
-* 🖱️ **Right-click paste working across terminals**
-* 🔍 **Search improved** (Ctrl+W with stable viewport updates)
-* 📌 **More reliable status & help bars**
-* 🐸 **Optimized ASCII splash**, no delay and no visual artifacts
-* 🧱 **No dependencies except ncurses**
-* 🔐 **Safer memory handling**, no leaks, no undefined behavior
+No ncurses. No UI libraries. No dependencies.
 
-FrogX is now **as small as nano**, but without its limitations — and without its weight.
+It runs directly on the Linux terminal stack using:
+
+* `termios` for raw mode input
+* `ioctl(TIOCGWINSZ)` for terminal size
+* ANSI escape sequences for rendering
+* low-level I/O via `read()` and `write()`
+
+This is the kind of software that makes you remember why Linux is beautiful.
 
 ---
 
-## 📥 **Download**
+## ✅ **Features**
 
-🎉 **Latest release (v2.0, C edition):**
+* Pure **C11** codebase
+* **Raw terminal mode** with deterministic input handling
+* **Fast screen refresh** using ANSI escape sequences
+* **Status bar** with filename, modified flag, Ln/Col, and messages
+* **Help bar** with the core shortcuts
+* Opens missing files as an empty buffer
+* **Ctrl+O** save with filename prompt (nano-style)
+* **Ctrl+X** exit (double press if modified)
+* **Ctrl+K** cut line, **Ctrl+U** uncut
+* **Ctrl+W** forward search
+* **Ctrl+A** select all (Backspace/Delete clears the entire buffer)
+* Arrow keys, Home/End, Page Up/Down
+* Tiny binary when built with LTO + section GC + strip
+
+Note: input insertion is **printable ASCII** (32..126). This is intentional for simplicity and speed.
+
+---
+
+## 📥 **Download (v2.0)**
+
+Latest release:
 
 👉 **[https://github.com/victormeloasm/frogx/releases/download/v2.0/frogx-2.0.0-linux-x86_64.tar.gz](https://github.com/victormeloasm/frogx/releases/download/v2.0/frogx-2.0.0-linux-x86_64.tar.gz)**
 
-Extract and place the executable wherever you prefer.
+### Install from release
+
+```bash
+curl -L -o frogx.tar.gz https://github.com/victormeloasm/frogx/releases/download/v2.0/frogx-2.0.0-linux-x86_64.tar.gz
+tar -xzf frogx.tar.gz
+
+sudo install -m 755 frogx /usr/local/bin/frogx 2>/dev/null || sudo install -m 755 */frogx /usr/local/bin/frogx
+```
+
+Run:
+
+```bash
+frogx file.txt
+```
 
 ---
 
 ## 🔧 **Build From Source**
 
-### **Requirements**
+### Requirements
 
-* `gcc` or `clang` with full C11 support
-* `ncurses` development headers
-* `lld` (optional) for extreme binary size reduction
+* Linux
+* `gcc` or `clang` (C11)
 
-### **Compile**
+That’s it. No libraries.
+
+### Compile (simple)
 
 ```bash
-gcc -std=c11 -O3 -ffunction-sections -fdata-sections -flto -fuse-ld=lld \
-    -s -o frogx frogx.c -lncurses
+gcc -std=c11 -O2 -Wall -Wextra -o frogx frogx.c
 ```
 
-Optional flags to reach the ~15 KB binary:
+### Compile (tiny and fast)
+
+This is the build style used to shrink the binary aggressively:
 
 ```bash
--Wl,--gc-sections,--strip-all
+clang -std=c11 -Os -ffunction-sections -fdata-sections -flto -fuse-ld=lld \
+  -Wl,--gc-sections,--strip-all \
+  -o frogx frogx.c
 ```
 
-### **Install globally**
+### Install globally
 
 ```bash
-sudo mv frogx /usr/local/bin/
-sudo chmod 755 /usr/local/bin/frogx
+sudo install -m 755 frogx /usr/local/bin/frogx
+```
+
+### Uninstall
+
+```bash
+sudo rm -f /usr/local/bin/frogx
 ```
 
 ---
 
 ## 🧠 **Keyboard Shortcuts**
 
-| Shortcut             | Action                         |
-| -------------------- | ------------------------------ |
-| **Ctrl+X**           | Exit (double-press if unsaved) |
-| **Ctrl+O**           | Save with filename prompt      |
-| **Ctrl+A**           | Select all                     |
-| **Delete/Backspace** | Delete characters              |
-| **Ctrl+K**           | Cut line                       |
-| **Ctrl+U**           | Uncut (paste)                  |
-| **Ctrl+W**           | Search forward                 |
-| **Arrow Keys**       | Move cursor                    |
-| **Home / End**       | Jump to line start/end         |
-| **Page Up/Down**     | Scroll viewport                |
-| **Right-Click**      | Paste                          |
+| Shortcut           | Action                                          |
+| ------------------ | ----------------------------------------------- |
+| **Ctrl+X**         | Exit (double press if modified)                 |
+| **Ctrl+O**         | Save (prompts for filename)                     |
+| **Ctrl+A**         | Select all (Backspace/Delete clears everything) |
+| **Ctrl+K**         | Cut line                                        |
+| **Ctrl+U**         | Uncut (paste cut line)                          |
+| **Ctrl+W**         | Search forward                                  |
+| **Arrow Keys**     | Move cursor                                     |
+| **Home / End**     | Line start / end                                |
+| **Page Up / Down** | Scroll by screen                                |
+| **Backspace**      | Delete left                                     |
+| **Delete**         | Delete under cursor                             |
 
 ---
 
 ## 📝 **Changelog (v2.0.0)**
 
-* Complete rewrite in C
-* Low-level I/O (`read`, `write`)
-* Stable redraw (no flicker, no UI glitches)
-* Faster search, cut, paste, and navigation
-* Improved status/help bar
-* Fixed splash screen timing and positioning
-* Global install support
-* ~15 KB optimized release binary
-* Overall: cleaner, faster, safer, smaller
+* Full rewrite in pure C
+* Removed UI libraries entirely
+* Raw terminal mode input (`termios`)
+* Terminal sizing via `ioctl`
+* Rendering via ANSI escape sequences
+* Low-level `read()` and `write()` I/O
+* Stable refresh and cursor logic
+* Better save prompt and status messages
+* Smaller, faster, cleaner
 
 ---
 
 ## 🐸 **Why FrogX Exists**
 
-Because the world doesn’t need another bloated editor.
+Because sometimes you want a text editor that does exactly this:
 
-Sometimes you just need:
+Open file
+Edit
+Save
+Quit
 
-* instant startup
-* predictable behavior
-* zero dependencies
-* zero configs
-* zero surprises
+No plugins. No config maze. No delays.
 
-**Open → edit → save → quit.**
-Everything else is noise.
+Just a tiny editor that stays close to the metal.
 
 ---
 
 ## 🐸💚 **Part of the FrogTools ecosystem**
 
-Security. Cryptography. Editors. Compression.
-Everything light, clean and open-source — from the Porquinho.
+Everything minimal. Everything fast. Everything open source.
+Built by Victor Duarte with Love <3
+
 
